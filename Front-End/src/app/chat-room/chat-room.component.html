@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página de Chat</title>
+  <link rel="stylesheet" href="./chat-room.component.css">
+</head>
+
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h2>Chat con {{ otherUser?.nickname }}</h2>
+      <!-- Aquí puedes agregar más elementos de encabezado, como la imagen de perfil del otro usuario, etc. -->
+    </div>
+  
+    <div class="chat-messages" id="chat">
+      <div class="message" *ngFor="let message of messages | async">
+        <div class="message-sender">{{ message.sender }}</div>
+        <div class="message-content">{{ message.content }}</div>
+        <div class="message-timestamp">{{ whenWasItPublished(message.t_stamp) }}</div>
+      </div>
+    </div>
+  
+    <div class="chat-input">
+      <input type="text" placeholder="Escribe un mensaje..." [formControl]="newMessage" />
+      <button (click)="sendMsg()">Enviar</button>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+
+  <script src="../../assets/js/bootstrap.min.js"></script>
+</body>
+
+</html>
