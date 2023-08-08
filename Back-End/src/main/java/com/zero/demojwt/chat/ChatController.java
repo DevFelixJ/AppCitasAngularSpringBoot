@@ -53,7 +53,7 @@ public class ChatController {
         ChatEntity ce = chatDAO.findByName(chat);
 
         if (ce != null) {
-            return messageDAO.findAllByChat_id(ce.getChat_id());
+            return messageDAO.findAllByChat_id(ce.getId());
         } else {
             return new ArrayList<MessageEntity>();
         }

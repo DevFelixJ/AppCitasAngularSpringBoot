@@ -14,8 +14,8 @@ public class ChatEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_id")
-	private long chat_id;
+	@Column(name = "id")
+	private long id;
 	
 	@Column(name = "name")
 	private String name;
@@ -27,12 +27,12 @@ public class ChatEntity {
 		this.name = name;
 	}
 
-	public long getChat_id() {
-		return chat_id;
+	public long getId() {
+		return id;
 	}
 
-	public void setChat_id(long chat_id) {
-		this.chat_id = chat_id;
+	public void setId(long chat_id) {
+		this.id = chat_id;
 	}
 
 	public String getName() {

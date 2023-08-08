@@ -8,11 +8,11 @@ public class MessageEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ms_id")
-	private long ms_id;
+	@Column(name = "id")
+	private long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "chat_id")
+	@JoinColumn(name = "chat.id")
 	private ChatEntity chat;
 	
 	@Column(name = "sender")
@@ -33,12 +33,12 @@ public class MessageEntity {
 		this.chat = chat;
 	}
 
-	public long getMs_id() {
-		return ms_id;
+	public long getId() {
+		return id;
 	}
 
-	public void setMs_id(long ms_id) {
-		this.ms_id = ms_id;
+	public void setId(long ms_id) {
+		this.id = ms_id;
 	}
 
 	public ChatEntity getChat() {

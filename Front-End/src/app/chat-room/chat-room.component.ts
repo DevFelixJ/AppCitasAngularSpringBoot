@@ -1,31 +1,28 @@
-import {Component, ElementRef, OnInit, AfterViewChecked } from '@angular/core'
+import { Component, ElementRef, OnInit, AfterViewChecked } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import {Observable, of} from 'rxjs'
+import { Observable, BehaviorSubject } from 'rxjs';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
+
 import { ActivatedRoute } from '@angular/router';
-import * as Stomp from 'stompjs';
-import * as SockJS from 'sockjs-client';
 
-import { ChatService } from '../services/chat.service'
-import { Message, User } from '../models/chat.model'
-
-
+import { ChatService } from '../services/chat.service';
+import { Message, User } from '../models/chat.model';
 
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
-  styleUrls: ['./chat-room.component.css']
+  styleUrls: ['./chat-room.component.css'],
 })
-
-
 export class ChatRoomComponent implements OnInit, AfterViewChecked {
-  url = 'http://localhost:8080';
+  url = 'ws://localhost:8080/chat'; // WebSocket URL
   otherUser?: User;
   thisUser: User = JSON.parse(sessionStorage.getItem('user')!);
   channelName?: string;
-  socket?: WebSocket;
-  stompClient?: Stomp.Client;
+  webSocketSubject?: WebSocketSubject<any>;
   newMessage = new FormControl('');
-  messages?: Observable<Array<Message>>;
+  messagesSubject = new BehaviorSubject<Array<Message>>([]);
+
+  messages$: Observable<Array<Message>> = this.messagesSubject.asObservable();
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +46,7 @@ export class ChatRoomComponent implements OnInit, AfterViewChecked {
   }
 
   scrollDown() {
-    var container = this.el.nativeElement.querySelector('#chat');
+    const container = this.el.nativeElement.querySelector('#chat');
     container.scrollTop = container.scrollHeight;
   }
 
@@ -66,41 +63,39 @@ export class ChatRoomComponent implements OnInit, AfterViewChecked {
     }
     this.loadChat();
     console.log('connecting to chat...');
-    this.socket = new SockJS(this.url + '/chat');
-    this.stompClient = Stomp.over(this.socket);
+    this.webSocketSubject = webSocket(this.url);
 
-    this.stompClient.connect({}, (frame) => {
-      console.log('connected to: ' + frame);
-      this.stompClient!.subscribe(
-        '/topic/messages/' + this.channelName,
-        (response) => {
+    this.webSocketSubject.subscribe(
+      (response) => {
+        if (response.channel === this.channelName) {
           this.loadChat();
         }
-      );
-    });
+      },
+      (error) => {
+        console.error('WebSocket error:', error);
+      }
+    );
   }
 
   sendMsg() {
     if (this.newMessage.value !== '') {
-      this.stompClient!.send(
-        '/app/chat/' + this.channelName,
-        {},
-        JSON.stringify({
-          sender: this.thisUser.nickname,
-          t_stamp: 'to be defined in server',
-          content: this.newMessage.value,
-        })
-      );
+      const message = {
+        channel: this.channelName,
+        sender: this.thisUser.nickname,
+        t_stamp: 'to be defined in server',
+        content: this.newMessage.value,
+      };
+
+      this.webSocketSubject?.next(message);
       this.newMessage.setValue('');
     }
   }
 
   loadChat() {
-    this.messages = this.chatService.getMessages(this.channelName!);
-    this.messages.subscribe((data) => {
+    this.chatService.getMessages(this.channelName!).subscribe((data) => {
       let mgs: Array<Message> = data;
       mgs.sort((a, b) => (a.ms_id > b.ms_id ? 1 : -1));
-      this.messages = of(mgs);
+      this.messagesSubject.next(mgs);
     });
   }
 

@@ -16,7 +16,7 @@
     </div>
   
     <div class="chat-messages" id="chat">
-      <div class="message" *ngFor="let message of messages | async">
+      <div class="message" *ngFor="let message of (messages$ | async)">
         <div class="message-sender">{{ message.sender }}</div>
         <div class="message-content">{{ message.content }}</div>
         <div class="message-timestamp">{{ whenWasItPublished(message.t_stamp) }}</div>

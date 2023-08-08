@@ -1,3 +1,4 @@
+// WebMvcConfig.java
 package com.zero.demojwt.Config;
 
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4200") // Reemplaza esta URL con la URL de tu frontend
+            .allowedOrigins("http://localhost:4200")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
-            .allowedHeaders("*");
+            .allowedHeaders("*")
+            .allowCredentials(true);
     }
 }
